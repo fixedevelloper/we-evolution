@@ -56,7 +56,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+           // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
         Schema::create('bills', function (Blueprint $table) {
             $table->id();
@@ -94,7 +94,7 @@ return new class extends Migration
 
             $table->timestamps();
 
-            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+           // $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
             $table->foreign('meter_reading_id')->references('id')->on('meter_readings')->onDelete('set null');
         });
 
