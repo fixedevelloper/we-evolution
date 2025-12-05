@@ -1,7 +1,6 @@
 <?php
 
 namespace App\Livewire;
-
 use Livewire\Component;
 use App\Models\PaymentLink;
 
@@ -11,47 +10,56 @@ class PayLinkPayment extends Component
     public $name;
     public $phone;
     public $email;
+    public $paymentMethod = ''; // nouveau champ select
     public $loading = false;
+    public $paymentSuccess = false;
+    public $paymentMessage = '';
 
     protected $rules = [
-        'name' => 'nullable|string|max:255',
-        'phone' => 'nullable|string|max:20',
-        'email' => 'nullable|email|max:255',
+        'name' => 'required|string|max:255',
+        'phone' => 'required|string|max:20',
+        'email' => 'required|email|max:255',
+        'paymentMethod' => 'required|in:om,mtn,card',
     ];
 
-    public function mount($linkId)
+    public function mount($link)
     {
-        $this->link = PaymentLink::findOrFail($linkId);
+        // Récupérer l'objet PayLink
+        $this->link = PaymentLink::query()->findOrFail($link);
 
-        $this->name = $this->link->name;
-        $this->phone = $this->link->phone;
-        $this->email = $this->link->email;
+        $this->name = $this->link->name ?? '';
+        $this->phone = $this->link->phone ?? '';
+        $this->email = $this->link->email ?? '';
     }
 
-    public function pay($method)
+
+    public function pay()
     {
         $this->validate();
 
         $this->loading = true;
+        $this->paymentSuccess = false;
+        $this->paymentMessage = '';
 
-        // Redirection vers ton endpoint paiement avec les infos du client
-        $query = http_build_query([
-            'name' => $this->name,
-            'phone' => $this->phone,
-            'email' => $this->email
-        ]);
+        // Ici tu peux appeler ton service interne pour lancer le paiement
+        // Simulons un traitement
+        sleep(1); // simulant un traitement réseau
+        // Exemple de réponse simulée
+        $success = true;
 
-        if($method === 'om') {
-            $url = route('pay.om', $this->link->reference) . '?' . $query;
-        } elseif($method === 'mtn') {
-            $url = route('pay.mtn', $this->link->reference) . '?' . $query;
-        } elseif($method === 'card') {
-            $url = route('pay.card', $this->link->reference) . '?' . $query;
+        if ($success) {
+            $this->paymentSuccess = true;
+            $this->paymentMessage = "Paiement via " . strtoupper($this->paymentMethod) . " initié avec succès pour {$this->link->reference}.";
+            $this->link->status='paid';
+            $this->link->save();
         } else {
-            $url = '#';
+            $this->paymentSuccess = false;
+            $this->paymentMessage = "Erreur lors du paiement.";
+            $this->link->status='canceled';
+            $this->link->save();
         }
 
-        return redirect()->to($url);
+        $this->loading = false;
     }
 
     public function render()
@@ -59,3 +67,4 @@ class PayLinkPayment extends Component
         return view('livewire.pay-link-payment');
     }
 }
+

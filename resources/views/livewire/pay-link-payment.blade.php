@@ -1,10 +1,11 @@
 <div>
     <div class="card shadow-sm">
-        <div class="card-header">
-            <p><h4>Payer avec</h4> {{ $link->reference }}</p>
+        <div class="card-header text-center">
+            <h4>Payer avec <strong>{{ $link->reference }}</strong></h4>
         </div>
         <div class="card-body">
 
+            {{-- Loader --}}
             @if($loading)
                 <div class="text-center mb-3">
                     <div class="spinner-border text-primary" role="status">
@@ -13,23 +14,30 @@
                 </div>
             @endif
 
-            <form wire:submit.prevent="pay('om')">
+            {{-- Message succès/erreur --}}
+            @if($paymentMessage)
+                <div class="alert {{ $paymentSuccess ? 'alert-success' : 'alert-danger' }}">
+                    {{ $paymentMessage }}
+                </div>
+            @endif
 
+            {{-- Formulaire --}}
+            <form wire:submit.prevent="pay">
                 <div class="mb-3">
-                    <label for="name" class="form-label">Nom du client</label>
-                    <input type="text" class="form-control" id="name" wire:model.defer="name">
+                    <label class="form-label">Nom du client</label>
+                    <input type="text" class="form-control" wire:model.defer="name" required>
                     @error('name') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label for="phone" class="form-label">Téléphone</label>
-                    <input type="text" class="form-control" id="phone" wire:model.defer="phone">
+                    <label class="form-label">Téléphone</label>
+                    <input type="text" class="form-control" wire:model.defer="phone" required>
                     @error('phone') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
                 <div class="mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" class="form-control" id="email" wire:model.defer="email">
+                    <label class="form-label">Email</label>
+                    <input type="email" class="form-control" wire:model.defer="email" required>
                     @error('email') <span class="text-danger">{{ $message }}</span> @enderror
                 </div>
 
@@ -43,18 +51,26 @@
                     <textarea class="form-control" rows="2" disabled>{{ $link->description }}</textarea>
                 </div>
 
-                <div class="d-grid gap-2">
-                    <button type="button" class="btn btn-warning" wire:click="pay('om')" @disabled($loading)>
-                        Payer avec Orange Money
-                    </button>
-                    <button type="button" class="btn btn-success" wire:click="pay('mtn')" @disabled($loading)>
-                        Payer avec MTN Mobile Money
-                    </button>
-                    <button type="button" class="btn btn-primary" wire:click="pay('card')" @disabled($loading)>
-                        Payer par Carte
+                <div class="mb-3">
+                    <label class="form-label">Mode de paiement</label>
+                    <select class="form-select" wire:model.live="paymentMethod">
+                        <option value="">-- Choisir --</option>
+                        <option value="om">Orange Money</option>
+                        <option value="mtn">MTN Mobile Money</option>
+                        <option value="card">Carte Bancaire</option>
+                    </select>
+                    @error('paymentMethod') <span class="text-danger">{{ $message }}</span> @enderror
+                </div>
+                <div class="d-grid gap-2 mt-4">
+                    <button type="submit" class="btn btn-primary"
+                            {{ empty($paymentMethod) ? 'disabled' : '' }}
+                            wire:loading.attr="disabled">
+                        Payer
                     </button>
                 </div>
+
             </form>
         </div>
     </div>
 </div>
+

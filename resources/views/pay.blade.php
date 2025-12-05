@@ -62,7 +62,7 @@
                 Veuillez contacter le commerçant pour un nouveau lien.
             </div>
         @else
-<livewire:pay-link-payment linkId="{{$link->id}}"/>
+<livewire:pay-link-payment link="{{$link->id}}"/>
         @endif
     </div>
 </div>
