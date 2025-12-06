@@ -3,6 +3,7 @@
 namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
+use Illuminate\Routing\UrlGenerator;
 
 class PayLinkResource extends JsonResource
 {
@@ -26,7 +27,7 @@ class PayLinkResource extends JsonResource
             'status' => $this->status,
             'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
             'expires_at' => $this->expires_at ? $this->expires_at->toDateTimeString() : null,
-            'pay_url' => $this->reference,
+            'pay_url' => env('app_url').'/pay/'.$this->reference,
         ];
     }
 }
