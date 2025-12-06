@@ -27,7 +27,7 @@ class PayLinkResource extends JsonResource
             'status' => $this->status,
             'created_at' => $this->created_at ? $this->created_at->toDateTimeString() : null,
             'expires_at' => $this->expires_at ? $this->expires_at->toDateTimeString() : null,
-            'pay_url' => env('app_url').'/pay/'.$this->reference,
+            'pay_url' => config('app.url').'/pay/'.$this->reference,
         ];
     }
 }
